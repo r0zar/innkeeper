@@ -32,7 +32,7 @@ export const myProvider = isTestEnvironment
         model: fireworks('accounts/fireworks/models/deepseek-r1'),
         middleware: extractReasoningMiddleware({ tagName: 'think' }),
       }),
-      'title-model': anthropic('claude-3-7-sonnet-20250219'),
+      'title-model': anthropic('claude-3-haiku-20240307'),
       'artifact-model': openai('gpt-4o-mini'),
     },
     imageModels: {

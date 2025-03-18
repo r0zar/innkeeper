@@ -10,13 +10,13 @@ import { QuestValidator } from '@/lib/quest/validator';
 export async function GET() {
   try {
     console.log('Starting quest validation cron job');
-    
+
     // Create validator and run validation
     const validator = new QuestValidator();
     await validator.validateAllActiveQuests();
-    
+
     console.log('Quest validation completed successfully');
-    
+
     // Return success
     return NextResponse.json(
       { success: true, message: 'Quest validation completed successfully' },
@@ -24,13 +24,13 @@ export async function GET() {
     );
   } catch (error) {
     console.error('Error in quest validation cron job:', error);
-    
+
     // Return error
     return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Quest validation failed', 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        success: false,
+        message: 'Quest validation failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
