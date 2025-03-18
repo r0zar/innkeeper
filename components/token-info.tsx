@@ -153,6 +153,16 @@ const PriceChangeBadge = ({ change }: { change: number | undefined }) => {
 export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenInfoProps) {
   const [showCopiedAddress, setShowCopiedAddress] = useState(false);
 
+  if (!tokenData) {
+    return (
+      <Card className="w-full">
+        <CardContent className="text-center py-6 text-muted-foreground">
+          No token data available
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Determine the contract principal to use
   const contractPrincipal = tokenData?.contract_principal || tokenData?.contract_address || '';
 
