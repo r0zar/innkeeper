@@ -20,7 +20,7 @@ export default async function QuestDetailPage(props: { params: Promise<{ id: str
 
   return (
     <div className="flex-1 overflow-hidden">
-      <div className="mx-auto max-w-4xl p-4 md:p-8 h-full">
+      <div className="mx-auto max-w-5xl p-4 md:p-8 h-full">
         <QuestDetail quest={quest} />
       </div>
     </div>

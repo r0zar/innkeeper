@@ -17,31 +17,31 @@ interface QuestsListProps {
 // Helper to get criteria summary from a criteria object
 const getCriteriaSummary = (criteria: any): string => {
   if (!criteria || !criteria.type) return 'Custom validation criteria';
-  
+
   const { type, params } = criteria;
-  
+
   switch (type) {
     case 'swappedFor':
       return `Swap ${params.tokenToSwap} for ${params.targetToken}`;
-      
+
     case 'holdsToken':
       return `Hold ${params.token}${params.minAmount ? ` (min: ${params.minAmount})` : ''}`;
-      
+
     case 'firstNBuyers':
       return `Be among first ${params.n} buyers of ${params.token}`;
-      
+
     case 'minValueSwap':
       return `Swap min value of ${params.minValue} for ${params.token}`;
-      
+
     case 'and':
       return 'Multiple combined criteria (AND)';
-      
+
     case 'or':
       return 'Alternative criteria (OR)';
-      
+
     case 'not':
       return 'Negated criteria (NOT)';
-      
+
     default:
       return 'Custom validation criteria';
   }
@@ -50,7 +50,7 @@ const getCriteriaSummary = (criteria: any): string => {
 // Network badge component
 const NetworkBadge = ({ network }: { network: string }) => {
   let color = "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-  
+
   switch (network.toLowerCase()) {
     case 'stacks':
     case 'stx':
@@ -65,7 +65,7 @@ const NetworkBadge = ({ network }: { network: string }) => {
       color = "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
       break;
   }
-  
+
   return (
     <span className={cn("text-xs px-2 py-1 rounded-full font-medium", color)}>
       {network}
@@ -84,11 +84,11 @@ export function QuestsList({ userId }: QuestsListProps) {
       try {
         setLoading(true);
         const response = await fetch('/api/quests');
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch quests');
         }
-        
+
         const data = await response.json();
         setQuests(data);
       } catch (err) {
@@ -108,9 +108,9 @@ export function QuestsList({ userId }: QuestsListProps) {
     acc[quest.status] = (acc[quest.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-  
+
   // Filter quests based on active filter
-  const filteredQuests = quests.filter(quest => 
+  const filteredQuests = quests.filter(quest =>
     activeFilter === 'all' || quest.status === activeFilter
   );
 
@@ -133,36 +133,36 @@ export function QuestsList({ userId }: QuestsListProps) {
   // QuestsFilter component
   const QuestsFilter = () => (
     <div className="flex flex-wrap gap-2 mb-4">
-      <Button 
-        variant={activeFilter === 'all' ? "default" : "outline"} 
+      <Button
+        variant={activeFilter === 'all' ? "default" : "outline"}
         size="sm"
         onClick={() => setActiveFilter('all')}
       >
         All ({counts.all || 0})
       </Button>
-      <Button 
-        variant={activeFilter === 'active' ? "default" : "outline"} 
+      <Button
+        variant={activeFilter === 'active' ? "default" : "outline"}
         size="sm"
         onClick={() => setActiveFilter('active')}
       >
         Active ({counts.active || 0})
       </Button>
-      <Button 
-        variant={activeFilter === 'draft' ? "default" : "outline"} 
+      <Button
+        variant={activeFilter === 'draft' ? "default" : "outline"}
         size="sm"
         onClick={() => setActiveFilter('draft')}
       >
         Draft ({counts.draft || 0})
       </Button>
-      <Button 
-        variant={activeFilter === 'completed' ? "default" : "outline"} 
+      <Button
+        variant={activeFilter === 'completed' ? "default" : "outline"}
         size="sm"
         onClick={() => setActiveFilter('completed')}
       >
         Completed ({counts.completed || 0})
       </Button>
-      <Button 
-        variant={activeFilter === 'failed' ? "default" : "outline"} 
+      <Button
+        variant={activeFilter === 'failed' ? "default" : "outline"}
         size="sm"
         onClick={() => setActiveFilter('failed')}
       >
@@ -175,16 +175,16 @@ export function QuestsList({ userId }: QuestsListProps) {
     return (
       <div className="text-center py-12">
         <div className="flex items-center justify-center rounded-full w-12 h-12 bg-muted mx-auto mb-4">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="text-muted-foreground"
           >
             <path d="M18 6 7 17l-5-5" />
@@ -212,9 +212,9 @@ export function QuestsList({ userId }: QuestsListProps) {
   return (
     <div className="w-full">
       <QuestsFilter />
-      
+
       <AnimatePresence>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredQuests.map((quest) => (
             <motion.div
               key={quest.id}
@@ -232,32 +232,37 @@ export function QuestsList({ userId }: QuestsListProps) {
                   </div>
                   <StatusBadge status={quest.status} />
                 </div>
-                
+
                 <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
                   {quest.description}
                 </p>
-                
+
                 {quest.criteria && (
                   <div className="text-xs text-muted-foreground mt-1 mb-2">
                     <span className="font-medium">Criteria: </span>
                     {getCriteriaSummary(quest.criteria)}
                   </div>
                 )}
-                
+
                 <div className="text-xs text-muted-foreground mt-auto">
                   <div className="flex justify-between mb-1">
                     <span>Created:</span>
                     <span className="font-medium">{formatDate(quest.createdAt)}</span>
                   </div>
-                  
-                  {quest.lastValidated && (
+                  {quest.startDate && (
                     <div className="flex justify-between">
-                      <span>Last validated:</span>
-                      <span className="font-medium">{formatDate(quest.lastValidated)}</span>
+                      <span>Start Date:</span>
+                      <span className="font-medium">{formatDate(quest.startDate)}</span>
+                    </div>
+                  )}
+                  {quest.endDate && (
+                    <div className="flex justify-between">
+                      <span>End Date:</span>
+                      <span className="font-medium">{formatDate(quest.endDate)}</span>
                     </div>
                   )}
                 </div>
-                
+
                 <Button variant="outline" className="w-full mt-4" asChild>
                   <Link href={`/quests/${quest.id}`}>View Details</Link>
                 </Button>

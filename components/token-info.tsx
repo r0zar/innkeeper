@@ -150,7 +150,7 @@ const PriceChangeBadge = ({ change }: { change: number | undefined }) => {
   );
 };
 
-export function TokenInfo({ tokenData = {}, priceHistory = [], latestPrice }: TokenInfoProps) {
+export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenInfoProps) {
   const [showCopiedAddress, setShowCopiedAddress] = useState(false);
 
   // Determine the contract principal to use

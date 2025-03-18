@@ -224,30 +224,30 @@ const TransactionTable = ({ transactions }: { transactions: Transaction[] }) => 
                     <div className="flex flex-col gap-1">
                       {tx.swap_details.map((swap, i) => {
                         // Extract readable token names
-                        const inAssetName = swap.in_asset.includes('::') 
+                        const inAssetName = swap.in_asset.includes('::')
                           ? swap.in_asset.split('::')[1]?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-                          : swap.in_asset.includes('.') 
+                          : swap.in_asset.includes('.')
                             ? swap.in_asset.split('.')[1]?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
                             : truncateAddress(swap.in_asset, 4, 4);
-                            
-                        const outAssetName = swap.out_asset.includes('::') 
+
+                        const outAssetName = swap.out_asset.includes('::')
                           ? swap.out_asset.split('::')[1]?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-                          : swap.out_asset.includes('.') 
+                          : swap.out_asset.includes('.')
                             ? swap.out_asset.split('.')[1]?.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
                             : truncateAddress(swap.out_asset, 4, 4);
-                        
+
                         return (
                           <div key={i} className="flex items-center gap-1 text-[10px]">
                             <span className="font-medium">{formatTokenAmount(swap.in_amount)}</span>
-                            <span 
-                              className="text-muted-foreground" 
+                            <span
+                              className="text-muted-foreground"
                               title={swap.in_asset}
                             >
                               {inAssetName || truncateAddress(swap.in_asset, 4, 4)}
                             </span>
                             <span className="mx-1">→</span>
                             <span className="font-medium">{formatTokenAmount(swap.out_amount)}</span>
-                            <span 
+                            <span
                               className="text-muted-foreground"
                               title={swap.out_asset}
                             >
@@ -341,8 +341,8 @@ export function ValidationResults({
             )}
             <CardDescription>{description}</CardDescription>
           </div>
-          
-          <Badge 
+
+          <Badge
             variant={result.satisfied ? "success" : "destructive"}
             className="capitalize"
           >
@@ -446,7 +446,7 @@ export function ValidationResults({
                       variant="ghost"
                       size="sm"
                       className="text-xs"
-                      onClick={() => document.querySelector('[data-value="transactions"]')?.click()}
+                      onClick={() => (document.querySelector('[data-value="transactions"]') as any)?.click()}
                     >
                       View all {result.matches.length} transactions
                     </Button>

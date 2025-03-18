@@ -49,7 +49,7 @@ const PurePreviewMessage = ({
     <AnimatePresence>
       <motion.div
         data-testid={`message-${message.role}`}
-        className="w-full mx-auto max-w-3xl px-4 group/message"
+        className="w-full mx-auto ma4xl px-4 group/message"
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         data-role={message.role}
@@ -213,8 +213,6 @@ const PurePreviewMessage = ({
                 if (state === 'result') {
                   const { result } = toolInvocation;
 
-                  console.log(toolName)
-
                   return (
                     <div key={toolCallId}>
                       {toolName === 'getWeather' ? (
@@ -230,14 +228,14 @@ const PurePreviewMessage = ({
                           latestPrice={result.latestPrice}
                         />
                       ) : result.action === 'list-tokens' ? (
-                        <TokenList 
+                        <TokenList
                           tokens={result.tokens || []}
                           count={result.count}
                           title="Available Tokens"
                           description={result.usage}
                         />
                       ) : result.action === 'get-latest-prices' ? (
-                        <TokenList 
+                        <TokenList
                           tokens={result.topTokens?.map((item: any) => ({
                             name: item.token,
                             symbol: '',
@@ -416,7 +414,7 @@ export const ThinkingMessage = () => {
   return (
     <motion.div
       data-testid="message-assistant-loading"
-      className="w-full mx-auto max-w-3xl px-4 group/message "
+      className="w-full mx-auto max-w-4xl px-4 group/message "
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}

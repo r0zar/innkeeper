@@ -236,11 +236,11 @@ const SwappedForCriteriaForm = ({
             Enter the token principal that will be swapped
           </p>
         </div>
-        
+
         <div className="flex justify-center">
           <ArrowDown className="h-5 w-5 text-muted-foreground" />
         </div>
-        
+
         <div>
           <Label htmlFor="targetToken">Target Token</Label>
           <Input
@@ -253,7 +253,7 @@ const SwappedForCriteriaForm = ({
             Enter the target token to receive in the swap
           </p>
         </div>
-        
+
         <div>
           <Label htmlFor="minAmount">Minimum Amount (Optional)</Label>
           <Input
@@ -341,7 +341,7 @@ const FirstNBuyersCriteriaForm = ({
             Enter the token principal to check first buyers for
           </p>
         </div>
-        
+
         <div>
           <Label htmlFor="n">Number of Buyers (N)</Label>
           <Input
@@ -357,7 +357,7 @@ const FirstNBuyersCriteriaForm = ({
             The number of first buyers to consider
           </p>
         </div>
-        
+
         <div>
           <Label htmlFor="minValueUsd">Minimum Value in USD (Optional)</Label>
           <Input
@@ -435,7 +435,7 @@ const MinValueSwapCriteriaForm = ({
             Enter the token principal to check swap value for
           </p>
         </div>
-        
+
         <div>
           <Label htmlFor="minValue">Minimum Value (USD)</Label>
           <Input
@@ -513,7 +513,7 @@ const HoldsTokenCriteriaForm = ({
             Enter the token principal to check holdings for
           </p>
         </div>
-        
+
         <div>
           <Label htmlFor="minAmount">Minimum Amount (Optional)</Label>
           <Input
@@ -560,13 +560,13 @@ const CombinatorCriteriaForm = ({
   const removeCondition = (index: number) => {
     const newConditions = [...criteria.params.conditions];
     newConditions.splice(index, 1);
-    
+
     // If no conditions left, remove the combinator itself
     if (newConditions.length === 0 && onRemove) {
       onRemove();
       return;
     }
-    
+
     onChange({
       ...criteria,
       params: {
@@ -579,7 +579,7 @@ const CombinatorCriteriaForm = ({
   const updateCondition = (index: number, updatedCondition: ValidationCriteria) => {
     const newConditions = [...criteria.params.conditions];
     newConditions[index] = updatedCondition;
-    
+
     onChange({
       ...criteria,
       params: {
@@ -618,9 +618,9 @@ const CombinatorCriteriaForm = ({
                   <X className="h-3 w-3" />
                 </Button>
               </div>
-              
+
               <CriteriaFormWrapper
-                criteria={condition}
+                criteria={condition as any}
                 onChange={(newCriteria) => updateCondition(index, newCriteria)}
                 onRemove={() => removeCondition(index)}
                 isNested={true}
@@ -629,10 +629,10 @@ const CombinatorCriteriaForm = ({
             </div>
           ))}
         </div>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
+
+        <Button
+          variant="outline"
+          size="sm"
           className="w-full"
           onClick={addCondition}
         >
@@ -683,7 +683,7 @@ const NotCriteriaForm = ({
       <CardContent className="p-4 pt-0 space-y-3">
         <div className="pl-4 border-l-2 border-red-300">
           <CriteriaFormWrapper
-            criteria={criteria.params.condition}
+            criteria={criteria.params.condition as any}
             onChange={updateCondition}
             isNested={true}
             showRemove={false} // Don't show remove button inside NOT
@@ -829,8 +829,8 @@ export function QuestCriteriaBuilder({
         </div>
 
         {showSearch && (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={() => setShowTokenSearch(!showTokenSearch)}
           >
@@ -845,7 +845,7 @@ export function QuestCriteriaBuilder({
           <p className="text-xs text-muted-foreground mb-4">
             Use this to find token information that you can copy into your criteria
           </p>
-          
+
           {/* This would integrate with your TokenSearch component */}
           <div className="text-center text-sm text-muted-foreground py-8">
             Token search integration would appear here
