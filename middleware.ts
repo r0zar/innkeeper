@@ -10,9 +10,6 @@ export const config = {
     '/:id',
     '/login',
     '/register',
-
-    // Exclude the cron job endpoint from authentication
-    // '/api/cron(.*)',
-    // '/api/(.*)',
+    '/api/(!cron)(.*)', // Apply to all API routes except those starting with /api/cron
   ],
 };

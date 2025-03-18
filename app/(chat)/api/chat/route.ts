@@ -30,6 +30,7 @@ import { getBlockchainActivity } from '@/lib/ai/tools/get-blockchain-activity';
 import { validateBlockchainCriteria } from '@/lib/ai/tools/validate-blockchain-criteria';
 import { getBlockchainDates } from '@/lib/ai/tools/get-blockchain-dates';
 import { createQuest } from '@/lib/ai/tools/quest-tool';
+import { searchTokens } from '@/lib/ai/tools/search-tokens';
 
 export const maxDuration = 60;
 
@@ -104,6 +105,7 @@ export async function POST(request: Request) {
                 'validateBlockchainCriteria',
                 'getBlockchainDates',
                 'createQuest',
+                'searchTokens',
               ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
@@ -113,6 +115,7 @@ export async function POST(request: Request) {
             getBlockchainActivity,
             validateBlockchainCriteria,
             getBlockchainDates,
+            searchTokens,
             createQuest: createQuest({ session, dataStream }),
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),

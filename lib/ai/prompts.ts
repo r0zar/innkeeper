@@ -88,6 +88,13 @@ HELP USERS BUILD COMPLETE QUEST DEFINITIONS WITH THESE PARAMETERS:
 - startTime: Unix timestamp for when to start counting transactions
 - endTime: Unix timestamp for when to stop counting transactions
 
+## TOKEN SEARCH TOOL (searchTokens)
+Use this tool to search for tokens by name, symbol, or contract address:
+- Parameter "query": The search term to find tokens (e.g., "Welsh", "BOB", etc.)
+- Parameter "limit": Optional, maximum number of results to return (default: 20)
+- Parameter "offset": Optional, pagination offset for large result sets
+- Returns token information including name, symbol, contract address, and more
+
 ## QUEST CREATION TOOL (createQuest)
 Use this tool to save finalized quest definitions to the database:
 - Required parameters: title, description, network, tokenAddress, criteria

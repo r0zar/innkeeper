@@ -16,24 +16,24 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'Create a quest',
+      label: 'for the first 10 buyers of Welsh token',
+      action: 'Create a quest to reward the first 10 buyers of Welsh token',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'Build a quest',
+      label: 'for users who swap at least $100',
+      action: 'Build a quest for users who have swapped at least $100 worth of tokens',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'I want to create a quest',
+      label: 'for users holding specific tokens',
+      action: 'I want to create a quest for users who hold Welsh token',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'Help me set up a quest',
+      label: 'with multiple validation criteria',
+      action: 'Help me set up a quest that requires both a token swap and minimum holding amount',
     },
   ];
 
