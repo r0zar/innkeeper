@@ -67,7 +67,7 @@ const NetworkBadge = ({ network }: { network: string }) => {
   }
 
   return (
-    <span className={cn("text-xs px-2 py-1 rounded-full font-medium", color)}>
+    <span style={{ width: 'fit-content' }} className={cn("text-xs px-2 py-1 rounded-full font-medium", color)}>
       {network}
     </span>
   );

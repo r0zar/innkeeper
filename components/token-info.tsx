@@ -174,19 +174,19 @@ export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenIn
       }
     }
 
-    return tokenData.price_change_24h;
+    return tokenData?.price_change_24h;
   };
 
   const priceChange = calculatePriceChange();
 
   // Display actual price or latest price from props
-  const displayPrice = latestPrice || tokenData.price_usd;
+  const displayPrice = latestPrice || tokenData?.price_usd;
 
   // Get token icon - either from URL or use first letter
-  const tokenIcon = tokenData.logo_url ? (
+  const tokenIcon = tokenData?.logo_url ? (
     <img
-      src={tokenData.logo_url}
-      alt={tokenData.symbol}
+      src={tokenData?.logo_url}
+      alt={tokenData?.symbol}
       className="w-12 h-12 rounded-full"
       onError={(e) => {
         // Hide broken images
@@ -195,7 +195,7 @@ export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenIn
     />
   ) : (
     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center text-white font-bold text-xl">
-      {tokenData.symbol ? tokenData.symbol.charAt(0) : '?'}
+      {tokenData?.symbol ? tokenData?.symbol.charAt(0) : '?'}
     </div>
   );
 
@@ -206,9 +206,9 @@ export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenIn
           <div className="flex items-center gap-3">
             {tokenIcon}
             <div>
-              <CardTitle className="text-xl">{tokenData.name}</CardTitle>
+              <CardTitle className="text-xl">{tokenData?.name}</CardTitle>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="font-medium">{tokenData.symbol}</span>
+                <span className="font-medium">{tokenData?.symbol}</span>
                 {displayPrice !== undefined && (
                   <span className="font-semibold text-foreground">
                     ${typeof displayPrice === 'number' ?
@@ -258,9 +258,9 @@ export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenIn
           <TabsContent value="overview">
             <div className="space-y-4">
               {/* Show description if available */}
-              {tokenData.description && (
+              {tokenData?.description && (
                 <div className="text-sm text-muted-foreground">
-                  {tokenData.description}
+                  {tokenData?.description}
                 </div>
               )}
 
@@ -291,45 +291,45 @@ export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenIn
                 <div>
                   <h4 className="text-xs text-muted-foreground mb-1">Supply</h4>
                   <p className="text-sm font-medium">
-                    {formatSupply(tokenData.total_supply, tokenData.decimals)}
+                    {formatSupply(tokenData?.total_supply, tokenData?.decimals)}
                   </p>
                 </div>
 
                 {/* Decimals */}
                 <div>
                   <h4 className="text-xs text-muted-foreground mb-1">Decimals</h4>
-                  <p className="text-sm font-medium">{tokenData.decimals}</p>
+                  <p className="text-sm font-medium">{tokenData?.decimals}</p>
                 </div>
 
                 {/* Market Cap if available */}
-                {tokenData.market_cap && (
+                {tokenData?.market_cap && (
                   <div>
                     <h4 className="text-xs text-muted-foreground mb-1">Market Cap</h4>
-                    <p className="text-sm font-medium">${formatNumber(tokenData.market_cap)}</p>
+                    <p className="text-sm font-medium">${formatNumber(tokenData?.market_cap)}</p>
                   </div>
                 )}
 
                 {/* Volume if available */}
-                {tokenData.volume_24h && (
+                {tokenData?.volume_24h && (
                   <div>
                     <h4 className="text-xs text-muted-foreground mb-1">24h Volume</h4>
-                    <p className="text-sm font-medium">${formatNumber(tokenData.volume_24h)}</p>
+                    <p className="text-sm font-medium">${formatNumber(tokenData?.volume_24h)}</p>
                   </div>
                 )}
 
                 {/* Creation date if available */}
-                {tokenData.creation_date && (
+                {tokenData?.creation_date && (
                   <div>
                     <h4 className="text-xs text-muted-foreground mb-1">Created</h4>
                     <p className="text-sm font-medium">
-                      {new Date(tokenData.creation_date).toLocaleDateString()}
+                      {new Date(tokenData?.creation_date).toLocaleDateString()}
                     </p>
                   </div>
                 )}
               </div>
 
               {/* Links if available */}
-              {tokenData.website && (
+              {tokenData?.website && (
                 <div className="pt-2">
                   <h4 className="text-xs text-muted-foreground mb-2">Links</h4>
                   <div className="flex flex-wrap gap-2">
@@ -337,13 +337,13 @@ export function TokenInfo({ tokenData, priceHistory = [], latestPrice }: TokenIn
                       variant="outline"
                       size="sm"
                       className="h-7 text-xs"
-                      onClick={() => window.open(tokenData.website, '_blank')}
+                      onClick={() => window.open(tokenData?.website, '_blank')}
                     >
                       Website
                       <ExternalLink className="ml-1 h-3 w-3" />
                     </Button>
 
-                    {tokenData.social_links && Object.entries(tokenData.social_links).map(([platform, url]) => (
+                    {tokenData?.social_links && Object.entries(tokenData?.social_links).map(([platform, url]) => (
                       <Button
                         key={platform}
                         variant="outline"
