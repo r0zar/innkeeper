@@ -11,6 +11,11 @@ import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
+import { TokenSearch } from './token-search';
+import { TokenInfo } from './token-info';
+import { TokenList } from './token-list';
+import { ValidationResults } from './validation-results';
+import { SwapActivity } from './swap-activity';
 import equal from 'fast-deep-equal';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -19,6 +24,7 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { MessageReasoning } from './message-reasoning';
 import { UseChatHelpers } from '@ai-sdk/react';
+import { Badge } from './ui/badge';
 
 const PurePreviewMessage = ({
   chatId,
@@ -162,6 +168,25 @@ const PurePreviewMessage = ({
                     >
                       {toolName === 'getWeather' ? (
                         <Weather />
+                      ) : toolName === 'searchTokens' ? (
+                        <div className="animate-pulse p-4 rounded-lg border border-border">
+                          <p className="text-muted-foreground">Searching for tokens...</p>
+                        </div>
+                      ) : toolName === 'getBlockchainData' || toolName === 'getBlockchainInfo' ? (
+                        <div className="animate-pulse p-4 rounded-lg border border-border">
+                          <div className="flex items-center gap-2">
+                            <div className="h-10 w-10 rounded-full bg-muted"></div>
+                            <div className="space-y-2">
+                              <div className="h-4 w-40 bg-muted rounded"></div>
+                              <div className="h-3 w-24 bg-muted rounded"></div>
+                            </div>
+                          </div>
+                          <div className="mt-4 space-y-2">
+                            <div className="h-3 w-full bg-muted rounded"></div>
+                            <div className="h-3 w-4/5 bg-muted rounded"></div>
+                            <div className="h-3 w-2/3 bg-muted rounded"></div>
+                          </div>
+                        </div>
                       ) : toolName === 'createDocument' ? (
                         <DocumentPreview isReadonly={isReadonly} args={args} />
                       ) : toolName === 'updateDocument' ? (
@@ -176,6 +201,10 @@ const PurePreviewMessage = ({
                           args={args}
                           isReadonly={isReadonly}
                         />
+                      ) : toolName === 'createQuest' ? (
+                        <div className="animate-pulse p-4 rounded-lg border border-border">
+                          <p className="text-muted-foreground">Creating quest...</p>
+                        </div>
                       ) : null}
                     </div>
                   );
@@ -184,30 +213,169 @@ const PurePreviewMessage = ({
                 if (state === 'result') {
                   const { result } = toolInvocation;
 
+                  console.log(toolName)
+
                   return (
                     <div key={toolCallId}>
                       {toolName === 'getWeather' ? (
                         <Weather weatherAtLocation={result} />
-                      ) : toolName === 'createDocument' ? (
-                        <DocumentPreview
-                          isReadonly={isReadonly}
-                          result={result}
+                      ) : toolName === 'searchTokens' ? (
+                        <TokenSearch searchResults={result} />
+                      ) : result.action === 'get-token-info' ? (
+                        <TokenInfo tokenData={result.data} />
+                      ) : result.action === 'get-token-price' ? (
+                        <TokenInfo
+                          tokenData={result.data || {}}
+                          priceHistory={result.data || []}
+                          latestPrice={result.latestPrice}
                         />
-                      ) : toolName === 'updateDocument' ? (
-                        <DocumentToolResult
-                          type="update"
-                          result={result}
-                          isReadonly={isReadonly}
+                      ) : result.action === 'list-tokens' ? (
+                        <TokenList 
+                          tokens={result.tokens || []}
+                          count={result.count}
+                          title="Available Tokens"
+                          description={result.usage}
                         />
-                      ) : toolName === 'requestSuggestions' ? (
-                        <DocumentToolResult
-                          type="request-suggestions"
-                          result={result}
-                          isReadonly={isReadonly}
+                      ) : result.action === 'get-latest-prices' ? (
+                        <TokenList 
+                          tokens={result.topTokens?.map((item: any) => ({
+                            name: item.token,
+                            symbol: '',
+                            decimals: 6,
+                            contract_principal: item.token,
+                            price_usd: item.price
+                          })) || []}
+                          showPrices={true}
+                          prices={result.prices || {}}
+                          title="Top Tokens by Price"
+                          description={result.usage}
                         />
-                      ) : (
-                        <pre>{JSON.stringify(result, null, 2)}</pre>
-                      )}
+                      ) : result.action === 'get-recent-swaps' ? (
+                        <SwapActivity
+                          swaps={result.data || []}
+                          timeframe={result.timeframe || "Recent Activity"}
+                        />
+                      ) : result.action === 'get-user-activity' ? (
+                        <SwapActivity
+                          swaps={result.swaps || []}
+                          transfers={result.tokenTransfers?.data || []}
+                          timeframe={result.timeframe || "Recent Activity"}
+                          userAddress={result.userAddress}
+                        />
+                      ) :
+                        (result.action === 'validate-token-swap' ||
+                          result.action === 'validate-first-n-buyers' ||
+                          result.action === 'validate-min-value-swap' ||
+                          result.action === 'validate-token-holding') ? (
+                          <ValidationResults
+                            result={{
+                              satisfied: result.validation?.satisfied || false,
+                              matches: result.sampleMatches || result.transfers || [],
+                              metadata: result.validation?.metadata || {}
+                            }}
+                            title={result.validation?.criteria || "Validation Results"}
+                            description={`Timeframe: ${result.validation?.timeframe || "Current"}`}
+                          />
+                        ) : result.action === 'preview-quest-validation' ? (
+                          <div className="space-y-4">
+                            <div className="rounded-lg border p-4">
+                              <h3 className="text-base font-medium mb-2">Quest Validation Preview</h3>
+                              <p className="text-sm text-muted-foreground mb-3">
+                                Preview of different validation options for {result.timeframe}
+                              </p>
+                              <div className="space-y-3">
+                                {Object.entries(result.previewResults).map(([key, validation]: [string, any]) => (
+                                  <div key={key} className={cn(
+                                    "p-3 rounded-md border",
+                                    validation.satisfied
+                                      ? "border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-900"
+                                      : "border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900"
+                                  )}>
+                                    <div className="flex items-center justify-between">
+                                      <div>
+                                        <Badge
+                                          variant={validation.satisfied ? "success" : "warning"}
+                                          className="mb-1"
+                                        >
+                                          {validation.satisfied ? "Will Pass" : "May Fail"}
+                                        </Badge>
+                                        <p className="text-sm font-medium">{validation.criteria}</p>
+                                      </div>
+                                      <div className="text-sm">
+                                        {validation.matched} matches
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            {result.recommendedValidation && (
+                              <div className="rounded-lg border-2 border-green-300 p-4 bg-green-50 dark:bg-green-950/20">
+                                <h3 className="text-base font-medium text-green-800 dark:text-green-300 mb-1">
+                                  Recommended Validation
+                                </h3>
+                                <p className="text-sm text-green-700 dark:text-green-400">
+                                  {result.recommendedValidation.message}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        ) :
+                          (result.action === 'get-current-time' ||
+                            result.action === 'convert-date' ||
+                            result.action === 'get-timeframe') ? (
+                            <div className="rounded-lg border p-4">
+                              <h3 className="text-base font-medium mb-3">
+                                {result.action === 'get-current-time' ? 'Current Time' :
+                                  result.action === 'convert-date' ? 'Date Conversion' :
+                                    'Timeframe Information'}
+                              </h3>
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                {Object.entries(
+                                  result.action === 'get-timeframe' ? result.timeframe :
+                                    result.action === 'convert-date' ? result.results : result
+                                )
+                                  .filter(([key]) => key !== 'action' && key !== 'success')
+                                  .map(([key, value]) => (
+                                    <div key={key} className="border rounded p-2">
+                                      <div className="text-xs text-muted-foreground mb-1">
+                                        {key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                      </div>
+                                      <div className="font-medium">{String(value)}</div>
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          ) : toolName === 'createDocument' ? (
+                            <DocumentPreview
+                              isReadonly={isReadonly}
+                              result={result}
+                            />
+                          ) : toolName === 'updateDocument' ? (
+                            <DocumentToolResult
+                              type="update"
+                              result={result}
+                              isReadonly={isReadonly}
+                            />
+                          ) : toolName === 'requestSuggestions' ? (
+                            <DocumentToolResult
+                              type="request-suggestions"
+                              result={result}
+                              isReadonly={isReadonly}
+                            />
+                          ) : toolName === 'createQuest' ? (
+                            <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
+                              <h3 className="text-green-800 dark:text-green-300 font-medium">Quest Created</h3>
+                              <p className="text-green-700 dark:text-green-400 text-sm mt-1">
+                                {result.message}
+                              </p>
+                              <p className="text-xs text-green-600 dark:text-green-500 mt-2">
+                                Quest ID: {result.questId}
+                              </p>
+                            </div>
+                          ) : (
+                            <pre>{JSON.stringify(result, null, 2)}</pre>
+                          )}
                     </div>
                   );
                 }
