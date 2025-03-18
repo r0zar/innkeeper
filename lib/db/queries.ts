@@ -15,6 +15,12 @@ import {
   message,
   vote,
   type DBMessage,
+  quest,
+  type Quest,
+  questValidation,
+  type QuestValidation,
+  questValidationResult,
+  type QuestValidationResult,
 } from './schema';
 import { ArtifactKind } from '@/components/artifact';
 
@@ -346,6 +352,261 @@ export async function updateChatVisiblityById({
     return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
+    throw error;
+  }
+}
+
+// Quest related database operations
+
+export async function createQuest({
+  title,
+  description,
+  criteria,
+  network,
+  tokenAddress,
+  userId,
+  startDate,
+  endDate,
+  status = 'draft',
+}: Omit<Quest, 'id' | 'createdAt'> & { id?: string }) {
+  try {
+    return await db.insert(quest).values({
+      id: undefined, // Will use defaultRandom() from schema
+      title,
+      description,
+      criteria,
+      network,
+      tokenAddress,
+      startDate,
+      endDate,
+      status,
+      userId,
+      createdAt: new Date(),
+    }).returning();
+  } catch (error) {
+    console.error('Failed to create quest in database');
+    throw error;
+  }
+}
+
+export async function getQuestById({ id }: { id: string }) {
+  try {
+    const [questData] = await db.select().from(quest).where(eq(quest.id, id));
+    return questData;
+  } catch (error) {
+    console.error('Failed to get quest by id from database');
+    throw error;
+  }
+}
+
+export async function getQuestsByUserId({ userId }: { userId: string }) {
+  try {
+    return await db
+      .select()
+      .from(quest)
+      .where(eq(quest.userId, userId))
+      .orderBy(desc(quest.createdAt));
+  } catch (error) {
+    console.error('Failed to get quests by user id from database');
+    throw error;
+  }
+}
+
+export async function updateQuestById({
+  id,
+  title,
+  description,
+  criteria,
+  network,
+  tokenAddress,
+  startDate,
+  endDate,
+  status,
+}: Partial<Quest> & { id: string }) {
+  try {
+    const updates: Partial<Quest> = {};
+
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (criteria !== undefined) updates.criteria = criteria;
+    if (network !== undefined) updates.network = network;
+    if (tokenAddress !== undefined) updates.tokenAddress = tokenAddress;
+    if (startDate !== undefined) updates.startDate = startDate;
+    if (endDate !== undefined) updates.endDate = endDate;
+    if (status !== undefined) updates.status = status;
+
+    return await db.update(quest).set(updates).where(eq(quest.id, id)).returning();
+  } catch (error) {
+    console.error('Failed to update quest in database');
+    throw error;
+  }
+}
+
+export async function deleteQuestById({ id }: { id: string }) {
+  try {
+    // First delete all validation results for this quest
+    const validations = await db
+      .select({ id: questValidation.id })
+      .from(questValidation)
+      .where(eq(questValidation.questId, id));
+    
+    for (const validation of validations) {
+      await db
+        .delete(questValidationResult)
+        .where(eq(questValidationResult.validationId, validation.id));
+    }
+    
+    // Delete all validations for this quest
+    await db.delete(questValidation).where(eq(questValidation.questId, id));
+    
+    // Finally delete the quest
+    return await db.delete(quest).where(eq(quest.id, id)).returning();
+  } catch (error) {
+    console.error('Failed to delete quest by id from database');
+    throw error;
+  }
+}
+
+// Quest Validation Functions
+
+export async function getActiveQuests() {
+  try {
+    return await db
+      .select()
+      .from(quest)
+      .where(eq(quest.status, 'active'));
+  } catch (error) {
+    console.error('Failed to get active quests from database');
+    throw error;
+  }
+}
+
+export async function createQuestValidation({
+  questId,
+  validationData,
+  status = 'pending',
+  nextValidationAt,
+}: {
+  questId: string;
+  validationData: any;
+  status?: 'pending' | 'success' | 'failed' | 'partial';
+  nextValidationAt?: Date;
+}) {
+  try {
+    return await db.insert(questValidation).values({
+      questId,
+      validationData,
+      status,
+      validatedAt: new Date(),
+      nextValidationAt,
+      processingTime: 0, // Will be updated after processing
+    }).returning();
+  } catch (error) {
+    console.error('Failed to create quest validation in database');
+    throw error;
+  }
+}
+
+export async function updateQuestValidation({
+  id,
+  status,
+  errorMessage,
+  validAddresses,
+  processingTime,
+  nextValidationAt,
+}: {
+  id: string;
+  status?: 'pending' | 'success' | 'failed' | 'partial';
+  errorMessage?: string;
+  validAddresses?: string[];
+  processingTime?: number;
+  nextValidationAt?: Date;
+}) {
+  try {
+    const updates: Partial<QuestValidation> = {};
+    
+    if (status !== undefined) updates.status = status;
+    if (errorMessage !== undefined) updates.errorMessage = errorMessage;
+    if (validAddresses !== undefined) updates.validAddresses = validAddresses;
+    if (processingTime !== undefined) updates.processingTime = processingTime;
+    if (nextValidationAt !== undefined) updates.nextValidationAt = nextValidationAt;
+    
+    return await db.update(questValidation).set(updates).where(eq(questValidation.id, id)).returning();
+  } catch (error) {
+    console.error('Failed to update quest validation in database');
+    throw error;
+  }
+}
+
+export async function getQuestValidationsByQuestId({ questId }: { questId: string }) {
+  try {
+    return await db
+      .select()
+      .from(questValidation)
+      .where(eq(questValidation.questId, questId))
+      .orderBy(desc(questValidation.validatedAt));
+  } catch (error) {
+    console.error('Failed to get quest validations by quest id from database');
+    throw error;
+  }
+}
+
+export async function createQuestValidationResult({
+  validationId,
+  userAddress,
+  isValid,
+  resultData,
+  criteriaType,
+}: {
+  validationId: string;
+  userAddress: string;
+  isValid: boolean;
+  resultData: any;
+  criteriaType: string;
+}) {
+  try {
+    return await db.insert(questValidationResult).values({
+      validationId,
+      userAddress,
+      isValid,
+      resultData,
+      validatedAt: new Date(),
+      criteriaType,
+    }).returning();
+  } catch (error) {
+    console.error('Failed to create quest validation result in database');
+    throw error;
+  }
+}
+
+export async function getQuestValidationResults({
+  validationId,
+}: {
+  validationId: string;
+}) {
+  try {
+    return await db
+      .select()
+      .from(questValidationResult)
+      .where(eq(questValidationResult.validationId, validationId));
+  } catch (error) {
+    console.error('Failed to get quest validation results from database');
+    throw error;
+  }
+}
+
+export async function getLatestQuestValidation({ questId }: { questId: string }) {
+  try {
+    const [validation] = await db
+      .select()
+      .from(questValidation)
+      .where(eq(questValidation.questId, questId))
+      .orderBy(desc(questValidation.validatedAt))
+      .limit(1);
+    
+    return validation;
+  } catch (error) {
+    console.error('Failed to get latest quest validation from database');
     throw error;
   }
 }

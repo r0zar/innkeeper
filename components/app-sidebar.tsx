@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Blocks } from 'lucide-react';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -59,6 +60,18 @@ export function AppSidebar({ user }: { user: User | undefined }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        {user && (
+          <div className="px-4 py-2">
+            <Link
+              href="/quests"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md hover:bg-muted"
+              onClick={() => setOpenMobile(false)}
+            >
+              <Blocks className="size-4" />
+              My Quests
+            </Link>
+          </div>
+        )}
         <SidebarHistory user={user} />
       </SidebarContent>
       <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>

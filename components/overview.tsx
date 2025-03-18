@@ -14,12 +14,12 @@ export const Overview = () => {
       transition={{ delay: 0.5 }}
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
-        <p className="flex flex-row justify-center gap-4 items-center">
+        <div className="flex flex-row justify-center gap-4 items-center">
           <VercelIcon size={32} />
           <span>+</span>
           <MessageIcon size={32} />
-        </p>
-        <p>
+        </div>
+        <div>
           This is an{' '}
           <Link
             className="font-medium underline underline-offset-4"
@@ -34,8 +34,8 @@ export const Overview = () => {
           function in the server and the{' '}
           <code className="rounded-md bg-muted px-1 py-0.5">useChat</code> hook
           on the client to create a seamless chat experience.
-        </p>
-        <p>
+        </div>
+        <div>
           You can learn more about the AI SDK by visiting the{' '}
           <Link
             className="font-medium underline underline-offset-4"
@@ -45,7 +45,7 @@ export const Overview = () => {
             docs
           </Link>
           .
-        </p>
+        </div>
       </div>
     </motion.div>
   );

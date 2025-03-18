@@ -9,6 +9,8 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  jsonb,
+  integer,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -150,3 +152,55 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const quest = pgTable('Quest', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  status: varchar('status', { enum: ['draft', 'active', 'completed', 'archived'] })
+    .notNull()
+    .default('draft'),
+  criteria: jsonb('criteria').notNull() as any,
+  network: varchar('network', { length: 64 }).notNull(),
+  tokenAddress: varchar('tokenAddress', { length: 256 }).notNull(),
+  createdAt: timestamp('createdAt').notNull(),
+  startDate: timestamp('startDate'),
+  endDate: timestamp('endDate'),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+});
+
+export type Quest = InferSelectModel<typeof quest>;
+
+export const questValidation = pgTable('QuestValidation', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  questId: uuid('questId')
+    .notNull()
+    .references(() => quest.id),
+  validatedAt: timestamp('validatedAt').notNull(),
+  status: varchar('status', { enum: ['pending', 'success', 'failed', 'partial'] })
+    .notNull()
+    .default('pending'),
+  validationData: jsonb('validationData').notNull() as any,
+  errorMessage: text('errorMessage'),
+  nextValidationAt: timestamp('nextValidationAt'),
+  validAddresses: jsonb('validAddresses').default('[]') as any,
+  processingTime: integer('processingTime'), // in milliseconds
+});
+
+export type QuestValidation = InferSelectModel<typeof questValidation>;
+
+export const questValidationResult = pgTable('QuestValidationResult', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  validationId: uuid('validationId')
+    .notNull()
+    .references(() => questValidation.id),
+  userAddress: varchar('userAddress', { length: 256 }).notNull(),
+  isValid: boolean('isValid').notNull(),
+  resultData: jsonb('resultData').notNull() as any,
+  validatedAt: timestamp('validatedAt').notNull(),
+  criteriaType: varchar('criteriaType', { length: 64 }).notNull(),
+});
+
+export type QuestValidationResult = InferSelectModel<typeof questValidationResult>;

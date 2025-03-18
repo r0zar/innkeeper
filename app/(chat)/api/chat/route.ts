@@ -25,6 +25,11 @@ import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
+import { getBlockchainInfo } from '@/lib/ai/tools/get-blockchain-info';
+import { getBlockchainActivity } from '@/lib/ai/tools/get-blockchain-activity';
+import { validateBlockchainCriteria } from '@/lib/ai/tools/validate-blockchain-criteria';
+import { getBlockchainDates } from '@/lib/ai/tools/get-blockchain-dates';
+import { createQuest } from '@/lib/ai/tools/quest-tool';
 
 export const maxDuration = 60;
 
@@ -90,15 +95,25 @@ export async function POST(request: Request) {
             selectedChatModel === 'chat-model-reasoning'
               ? []
               : [
-                  'getWeather',
-                  'createDocument',
-                  'updateDocument',
-                  'requestSuggestions',
-                ],
+                'getWeather',
+                'createDocument',
+                'updateDocument',
+                'requestSuggestions',
+                'getBlockchainInfo',
+                'getBlockchainActivity',
+                'validateBlockchainCriteria',
+                'getBlockchainDates',
+                'createQuest',
+              ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           experimental_generateMessageId: generateUUID,
           tools: {
             getWeather,
+            getBlockchainInfo,
+            getBlockchainActivity,
+            validateBlockchainCriteria,
+            getBlockchainDates,
+            createQuest: createQuest({ session, dataStream }),
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({
@@ -159,6 +174,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    console.error(error);
     return new Response('An error occurred while processing your request!', {
       status: 404,
     });
