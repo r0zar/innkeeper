@@ -180,15 +180,15 @@ export function QuestValidationList({ questId }: QuestValidationListProps) {
                     </div>
 
                     <h5 className="font-medium mb-2">Validation Results</h5>
-                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                    <div className="space-y-2 max-h-[640px] overflow-y-auto">
                       {validationResults.map((result) => (
                         <div
                           key={result.id}
-                          className={`p-2 rounded text-sm ${result.isValid ? 'bg-green-50 border border-green-100' : 'bg-gray-50 border border-gray-100'
+                          className={`p-2 rounded text-sm ${result.isValid ? 'bg-green-500/10 border border-green-500' : 'bg-gray-50/10 border border-gray-100'
                             }`}
                         >
                           <div className="flex justify-between mb-1">
-                            <span className="font-medium">{result.userAddress.slice(0, 8)}...{result.userAddress.slice(-8)}</span>
+                            <span className="font-medium">{result.userAddress}</span>
                             <span className={result.isValid ? 'text-green-600' : 'text-gray-500'}>
                               {result.isValid ? 'Valid' : 'Invalid'}
                             </span>
@@ -196,6 +196,9 @@ export function QuestValidationList({ questId }: QuestValidationListProps) {
                           <div className="text-xs text-muted-foreground">
                             Type: {result.criteriaType}
                           </div>
+                          <pre>
+                            {JSON.stringify(result, null, 2)}
+                          </pre>
                         </div>
                       ))}
                     </div>
@@ -239,8 +242,8 @@ function getStatusDescription(validation: QuestValidation) {
   switch (validation.status) {
     case 'success':
       return `Validation completed successfully with ${validation.validAddresses && Array.isArray(validation.validAddresses)
-          ? validation.validAddresses.length
-          : 0
+        ? validation.validAddresses.length
+        : 0
         } valid addresses`;
     case 'failed':
       return 'Validation failed due to an error';
